@@ -1,0 +1,39 @@
+database:testdb,Test data base,,,,,
+--,-,-,-,-,-,-
+table:table_info,Table info,,,,,
+-- column,display name,PK,FK,type,constraint,comment
+id,ID, T ,,serial,not null,table ID
+name,Table name,,,varchar(50),not null unique,table name
+comment,Description,,,varchar(100),,Description of this table
+end-table,,,,,,
+--,-,-,-,-,-,-
+table:column_info,Column info,,,,,
+-- column,display name,PK,FK,type,constraint,comment
+id,ID,T,,int,not null,Column ID
+table_id,Table id,T,table_info.id,int,not null,Table info ID
+name,Column name,,,varchar(50),not null,Column name
+display,Dispaly name,,,varchar(50),,Display name for this column
+pk,Key,,,char,,Is this column a primary key? T | t | “”
+fk,Forin key,,,varchar(50),,table.column
+type,Column data type,,,varchar(50),not null,Data type of this column
+constraint,Constraint,,,varchar(100),,This column constraint
+comment,Description,,,varchar(100),,Description for this column
+end-table,,,,,,
+--,-,-,-,-,-,-
+table:ui_field_type,UI field type list,,,,,
+-- column,display name,PK,FK,type,constraint,comment
+id,Key,T,,serial,not null,ID
+name,Type name,,,Varchar(20),not null unique,"Type name in UI (dropdown, text, textaria, check, radio)"
+end-table,,,,,,
+--,-,-,-,-,-,-
+table:ui_info,Column info for UI extentions,,,,,
+-- column,display name,PK,FK,type,constraint,comment
+column_id,Column id,T,column_info.id,int,not null,Column info table ID
+table_id,Table id,T,table_info.id,int,not null,Table info tble ID
+type,Column type,,ui_field_type.id,int,not null,Column type in UI
+default,Default value,,,varchar(100),,The default value of the string representation
+dropdown,Dropdown,,,varchar(100),,Drop-down list source table name
+requier,Is requier,,,bool,,Is requier this column
+readonly,Is read only,,,bool,,Is read only this column
+hidden,Is hidden,,,bool,,Is hidden this column
+end-table,,,,,,

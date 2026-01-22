@@ -34,6 +34,11 @@ set(TM_DOCKER_ROOT ${TM_ROOT_DIRECTORY}/docker)
 ## output directories
 set(TM_OUTPUT_ROOT ${TM_BUILD_DIRECTORY})
 
+###############
+## configure ##
+###############
+configure_file("${TM_ROOT_DIRECTORY}/package.json.in" "${TM_ROOT_DIRECTORY}/package.json")
+
 ###########
 # options #
 ###########

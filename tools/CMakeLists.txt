@@ -41,5 +41,19 @@ set(TOOLS_OUTPUT "${TOOLS_BUILD_DIRECTORY}/${TARGET}/${TARGET_DIR}")
 set(GOLANG_GOMOD_DIRECTORY ${TM_ROOT})
 set(GOLANG_BUILD_OUT_DIRECTORY ${TOOLS_OUTPUT})
 
-set(BUILD_TOOLS_CSV2SQL On)
-add_subdirectory(${TOOLS_ROOT}/csv2sql)
+# csv2sql
+set(GOLANG_ENTRY_POINT "${TOOLS_ROOT}/cmd/csv2sql/main.go")
+set(TARGET_CSV2SQL "csv2sql")
+add_golang_executable(${TARGET_CSV2SQL})
+
+
+add_custom_target("clean_${TARGET_CSV2SQL}"
+  COMMAND rm ${TARGET_CSV2SQL}
+  WORKING_DIRECTORY ${TOOLS_OUTPUT}
+  COMMENT "Remove ${TOOLS_OUT}/${TARGET_CSV2SQL}"
+)
+
+add_custom_target(clean_tools
+  DEPENDS "clean_${TARGET_CSV2SQL}"
+  COMMENT "Remove ${TOOLS_OUT}/*"
+)

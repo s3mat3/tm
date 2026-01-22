@@ -10,7 +10,7 @@ package port
 import (
 	"fmt"
 	"os"
-	"github.com/s3mat3/tm/tools/csv2sql/internal/port/file"
+	"github.com/s3mat3/tm/tools/internal/port/file"
 )
 
 

@@ -5,11 +5,11 @@ This is a tool that converts table structures created in spreadsheet application
 
 ### build
 
-go build -ldflags="-s -w" -trimpath -o some-path/csv2sql backend/tools/csv2sql/cmd/main.go
+go build -ldflags="-s -w" -trimpath -o some-path/csv2sql ./tools/cmd/csv2sql/main.go
 
 ### usage
 
-some-path/csv2sql -in tools/csv2sql/sample/table.csv -out tools/csv2sql/sample/out/
+some-path/csv2sql -in ./tools/cmd/csv2sql/sample/table.csv -out ./tools/cmd/csv2sql/sample/out/
 
 ### Sample output
 

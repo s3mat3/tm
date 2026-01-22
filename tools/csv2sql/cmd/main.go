@@ -18,12 +18,12 @@ import (
 	"fmt"
 	"os"
 
-	"backend/tools/csv2sql/internal/converter"
-	"backend/tools/csv2sql/internal/generator"
-	"backend/tools/csv2sql/internal/port"
-	"backend/tools/csv2sql/internal/port/args"
-	_ "backend/tools/csv2sql/internal/port/db_info"
-	"backend/tools/csv2sql/internal/reader"
+	"github.com/s3mat3/tm/tools/csv2sql/internal/converter"
+	"github.com/s3mat3/tm/tools/csv2sql/internal/generator"
+	"github.com/s3mat3/tm/tools/csv2sql/internal/port"
+	"github.com/s3mat3/tm/tools/csv2sql/internal/port/args"
+	_ "github.com/s3mat3/tm/tools/csv2sql/internal/port/db_info"
+	"github.com/s3mat3/tm/tools/csv2sql/internal/reader"
 )
 
 func IsExistsInput(n string) bool {

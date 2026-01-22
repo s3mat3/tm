@@ -8,7 +8,7 @@
 package converter
 
 import (
-	"backend/tools/csv2sql/internal/port/db_info"
+	"github.com/s3mat3/tm/tools/csv2sql/internal/port/db_info"
 )
 
 type Converter interface {

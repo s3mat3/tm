@@ -1,9 +1,8 @@
 #[[
 usage cmake -DCMAKE_BUILD_TYPE=(Debug | Release | '') \
- -DTM_BUILD_BACKEND=(on | off default) \
- -DTM_BUILD_FRONTEND=(on | off default) \
- -DTM_BACKEND_TEST=(on | off default) \
- -DTM_FRONTEND_TEST=(on | off default)
+ -DCMAKE_VERBOSE_MAKEFILE=(on | off) \
+ -DBUILD_TOOLS=(on | off default) \
+ -DBUILD_APP=(on | off default)
 ]]
 cmake_minimum_required(VERSION 3.24)
 
@@ -28,8 +27,8 @@ set(TM_BUILD_DIRECTORY ${PROJECT_BINARY_DIR})
 
 set(TM_SCRIPTS ${TM_ROOT_DIRECTORY}/scripts)
 
-set(TM_FRONTEND_ROOT ${TM_ROOT_DIRECTORY}/frontend)
-set(TM_BACKEND_ROOT ${TM_ROOT_DIRECTORY}/backend)
+set(TM_APP_ROOT ${TM_ROOT_DIRECTORY}/app)
+set(TM_TOOLS_ROOT ${TM_ROOT_DIRECTORY}/tools)
 set(TM_DOCKER_ROOT ${TM_ROOT_DIRECTORY}/docker)
 
 ## output directories
@@ -38,19 +37,17 @@ set(TM_OUTPUT_ROOT ${TM_BUILD_DIRECTORY})
 ###########
 # options #
 ###########
-option(BUILD_BACKEND "Server side compile." OFF)
-option(BUILD_BACKEND_TEST "Test for server side" OFF)
-option(BUILD_FRONTEND "Client side compile." OFF)
-option(BUILD_FRONTEND_TEST "Test for client side" OFF)
+option(BUILD_TOOLS "Build tools" Off)
+option(BUILD_APP "Build app" Off)
 
-if(BUILD_BACKEND)
-  set(TM_BUILD_BACKEND ON)
-  add_subdirectory(${TM_BACKEND_ROOT})
+if(BUILD_TOOLS)
+  set(TM_BUILD_TOOLS ON)
+  add_subdirectory(${TM_TOOLS_ROOT})
 endif()
 
-if(BUILD_FRONTEND)
-  set(TM_BUILD_FRONTEND ON)
-  add_subdirectory(${TM_FRONTEND_ROOT})
+if(BUILD_APP)
+  set(TM_BUILD_APP ON)
+  add_subdirectory(${TM_APP_ROOT})
 endif()
 
 ################

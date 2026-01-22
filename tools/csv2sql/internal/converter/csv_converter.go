@@ -8,8 +8,8 @@
 package converter
 
 import (
-	"backend/tools/csv2sql/internal/port/db_info"
-	"backend/tools/csv2sql/internal/reader"
+	"github.com/s3mat3/tm/tools/csv2sql/internal/port/db_info"
+	"github.com/s3mat3/tm/tools/csv2sql/internal/reader"
 	"errors"
 	"fmt"
 	"strings"

@@ -7,6 +7,6 @@ project(${TARGET}
   LANGUAGES NONE)
 
 if (BUILD_TOOLS_CSV2SQL)
-  set(GOLANG_ENTRY_POINT "${TM_BACKEND_ROOT}/tools/csv2sql/cmd/main.go")
+  set(GOLANG_ENTRY_POINT "${TOOLS_ROOT}/csv2sql/cmd/main.go")
   add_golang_executable(${TARGET})
 endif()

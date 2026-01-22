@@ -1,3 +1,6 @@
+v0.200.1
+- fix(doc): Fix link in README
+
 v0.200.0
 - change: Keep the directory structure closer to the standard
 

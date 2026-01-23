@@ -12,7 +12,10 @@ add_golang_executable
  GOLANG_BUILD_MODE          {string} - Go build mode (Not yet)
  GOLANG_BUILD_TARGET        {string} - Target name for application
  GOLANG_BUILD_OUT_DIRECTORY {string} - Go builder output binary dhirectory
-
+ GOLANG_LINK_C              {int}    - 0: No link c/c++ module(s), 1: link c/c++ module(s)
+ GOLANG_OS                  {string} - GO module execute environment
+ GOLANG_ARCH                {string} - GO module build for ARCH
+ 
 USAGE:
 set(REPOS_VERSION "0.0.0")
 set(REPOS_REVISION "deadbeef")
@@ -33,7 +36,7 @@ function(add_golang_executable GOLANG_BUILD_TARGET)
   message("${REPOS_VERSION}/${REPOS_REVISION}")
   # build command
   add_custom_command(OUTPUT ${GOLANG_BUILD_OUT_DIRECTRY}/${GOLANG_BUILD_TARGET}
-    COMMAND go build
+    COMMAND CGO=${GOLANG_LINK_C} GOOS=${GOLANG_OS} GOARCH=${GOLANG_ARCH} go build
     -o "${GOLANG_BUILD_OUT_DIRECTORY}/${GOLANG_BUILD_TARGET}"
     ${l_flags}
     -ldflags="${l_ldflags}"

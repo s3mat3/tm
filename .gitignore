@@ -8,7 +8,22 @@ build
 # ---> Go
 go.work
 env
+study
+# generate by templ from *.tmpl
+templates/*.go
+
+# --> Go tools
+# For hot reloader named air
+.air-tmp
 
 # ---> docker
 .env
+
+# ---> js/vite
+dist
+
+# ---> js/npm
+node_modules
+# generate by cmake from package.json.in
+package.json
 

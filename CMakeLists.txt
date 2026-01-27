@@ -28,6 +28,7 @@ set(TM_BUILD_DIRECTORY ${PROJECT_BINARY_DIR})
 set(TM_SCRIPTS ${TM_ROOT_DIRECTORY}/scripts)
 
 set(TM_APP_ROOT ${TM_ROOT_DIRECTORY}/app)
+set(TM_UI_ROOT ${TM_APP_ROOT}/ui)
 set(TM_TOOLS_ROOT ${TM_ROOT_DIRECTORY}/tools)
 set(TM_DOCKER_ROOT ${TM_ROOT_DIRECTORY}/docker)
 
@@ -37,7 +38,7 @@ set(TM_OUTPUT_ROOT ${TM_BUILD_DIRECTORY})
 ###############
 ## configure ##
 ###############
-configure_file("${TM_ROOT_DIRECTORY}/package.json.in" "${TM_ROOT_DIRECTORY}/package.json")
+configure_file("${TM_UI_ROOT}/package.json.in" "${TM_UI_ROOT}/package.json")
 
 ###########
 # options #
@@ -58,6 +59,26 @@ endif()
 ################
 # make targets #
 ################
+add_custom_target("build-template"
+  COMMAND templ generate
+  WORKING_DIRECTORY ${TM_ROOT_DIRECTORY}
+  COMMENT "Building template"
+)
+
+add_custom_target("build-ui"
+  COMMAND npm run build
+  WORKING_DIRECTORY ${TM_UI_ROOT}
+  DEPENDS "build-template"
+  COMMENT "Bulding ui"
+)
+
+add_custom_target("run"
+  COMMAND air
+  WORKING_DIRECTORY ${TM_ROOT_DIRECTORY}
+  DEPENDS "build-ui"
+  COMMENT "Running ... "
+)
+
 add_custom_target(up
   COMMAND ${TM_SCRIPTS}/up
   WORKING_DIRECTORY ${TM_DOCKER_ROOT}

@@ -1,54 +1,139 @@
 #[[
-add_golang_executable
+Building an executable from GO source
+add_golang_executable(
+  target       -- Target name. (required)
+  ENTRY_POINT  -- Entry point for executable. (required)
+  GOMOD_DIR    -- GO app root. (option) default CMAKE_CURRENT_SOURCE_DIR
+  [OUTPUT]     -- Target output destination. (option) default ${CMAKE_CURRENT_BINARY_DIR}/bin/${target}
+  [FLAGS]      -- Build flag. (option) (list) default -trimpath
+  [LD_FLAGS]   -- Linker flag. (option) (list) defult ""
+  [SOURCES]    -- Source files to be built. (option) (list) default file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.go")
+  [DEPS]       -- Non-source build dependencies (option) (list) default empty
+  [VERSION]    -- Project(repository) version. (option) defult no set and no effect
+  [REVISION]   -- Project(repository) revision. (option) default no set and no effect
+  [GOOS]       -- OS to build on. (option) default from CMAKE_SYSTEM_NAME
+  [GOARCH]     -- CPU to build on. (option) defualt from CMAKE_SYSTEM_PROCESSOR
+  [CGO]        -- c/c++ link flag. (option) defult 0 (Not link)
+)
 
- Variables set externally and used inside the function
-
- REPOS_VERSION              {string} - Project repository version from VCS
- REPOS_REVISION             {string} - Project repository revision from VCS
- GOLANG_GOMOD_DIRECTORY     {string} - Go module root directory (compile on this directory)
- GOLANG_ENTRY_POINT         {string} - Entry point of target application
- GOLANG_BUILD_FLAGS         {list}   - Go build option(s)
- GOLANG_BUILD_LDFLAGS       {list}   - Go linker options
- GOLANG_BUILD_MODE          {string} - Go build mode (Not yet)
- GOLANG_BUILD_TARGET        {string} - Target name for application
- GOLANG_BUILD_OUT_DIRECTORY {string} - Go builder output binary dhirectory
- GOLANG_LINK_C              {int}    - 0: No link c/c++ module(s), 1: link c/c++ module(s)
- GOLANG_OS                  {string} - GO module execute environment
- GOLANG_ARCH                {string} - GO module build for ARCH
- 
-USAGE:
-set(REPOS_VERSION "0.0.0")
-set(REPOS_REVISION "deadbeef")
-list(APPEND GOLANG_BUILD_FLAGS -tags release)
-list(APPEND GOLANG_BUILD_LDFLAGS -s -w)
-set(GOLANG_GOMOD_DIRECTORY ${BACKEND_ROOT})
-set(GOLANG_ENTRY_POINT "${BACKEND_ROOT}/tools/csv2sql/cmd/main.go")
-set(GOLANG_BUILD_OUT_DIRECTORY ${BACKEND_OUTPUT})
-
-add_golang_executable(${TARGET})
+For example
+set(TARGET "myapp")
+set(TARGET_ENTRY_POINT "${CMAKE_CURRENT_SOURCE_DIR}/cmd/some-dir/main.go")
+list(APPEND TARGET_BUILD_FLAGS -tags release)
+list(APPEND TARGET_BUILD_LD_FLAGS -s -w)
+add_golang_executable(
+  ${TARGET}
+  ENTRY_POINT ${TARGET_ENTRY_POINT}
+  FLAGS ${TARGET_BUILD_FLAGS}
+  LD_FLAGS ${TARGET_BUILD_LD_FLAGS}
+  VERSION ${REPOS_VERSION}
+  REVISION ${REPOS_REVISION}
+)
 ]]
-function(add_golang_executable GOLANG_BUILD_TARGET)
-  list(REMOVE_DUPLICATES GOLANG_BUILD_FLAGS)
-  list(APPEND l_flags ${GOLANG_BUILD_FLAGS} -a -trimpath)
 
-  list(REMOVE_DUPLICATES GOLANG_BUILD_LD_FLAGS)
-  list(APPEND l_ldflags ${GOLANG_BUILD_LDFLAGS} -X main.Version=${REPOS_VERSION} -X main.Revision=${REPOS_REVISION})
-  message("${REPOS_VERSION}/${REPOS_REVISION}")
-  # build command
-  add_custom_command(OUTPUT ${GOLANG_BUILD_OUT_DIRECTRY}/${GOLANG_BUILD_TARGET}
-    COMMAND CGO=${GOLANG_LINK_C} GOOS=${GOLANG_OS} GOARCH=${GOLANG_ARCH} go build
-    -o "${GOLANG_BUILD_OUT_DIRECTORY}/${GOLANG_BUILD_TARGET}"
-    ${l_flags}
-    -ldflags="${l_ldflags}"
-    ${GOLANG_ENTRY_POINT}
-    #VERBATIM
-    WORKING_DIRECTORY ${GOLANG_GOMOD_DIRECTORY}
-    COMMENT "Bulding ${GOLANG_BUILD_TARGET} from ${GOLANG_ENTRY_POINT}"
+function(add_golang_executable target)
+  # find golang
+  find_program(GOLANG_EXECUTABLE go)
+  if (NOT GOLANG_EXECUTABLE)
+    message(FATAL_ERROR "add_golang_executable: Is golang installed? Check your executable path.")
+  endif (NOT GOLANG_EXECUTABLE)
+  message("Founded GO lang in : ${GOLANG_EXECUTABLE}")
+  #
+  cmake_parse_arguments(
+    GO_BUILD_ARG
+    ""
+    "ENTRY_POINT"
+    "GOMOD_DIR;OUTPUT;FLAGS;LD_FLAGS;SOURCES;DEPS;VERSION;REVISION;GOOS;GOARCH;CGO"
+    ${ARGN})
+  # Check entry point. if no given to fatal error.
+  if (NOT DEFINED GO_BUILD_ARG_ENTRY_POINT)
+    message(FATAL_ERROR "add_golang_executable: No entry point...")
+  endif(NOT DEFINED GO_BUILD_ARG_ENTRY_POINT)
+  #
+  message(STATUS "add_golang_executable: Build ${target} from ${GO_BUILD_ARG_ENTRY_POINT}")
+  #
+  if (NOT DEFINED GO_BUILD_ARG_GOMOD_DIR)
+    set(GO_BUILD_ARG_GOMOD_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+    message(STATUS "add_golang_executable: Set default GOMOD_DIR => ${GO_BUILD_ARG_GOMOD_DIR}")
+  endif()
+  #
+  if (NOT DEFINED GO_BUILD_ARG_OUTPUT)
+    set(GO_BUILD_ARG_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/bin/${target}")
+    message(STATUS "add_golang_executable: Set default OUTPUT => ${GO_BUILD_ARG_OUTPUT}")
+  endif ()
+  # Setup default sources (Recommend run rebuild_cache)
+  if (NOT DEFINED GO_BUILD_ARG_SOURCES)
+    file(GLOB_RECURSE
+      GO_BUILD_ARG_SOURCES
+      CONFIGURE_DEPENDS
+      "${CMAKE_CURRENT_SOURCE_DIR}/*.go"
+    )
+    message(STATUS "add_golang_executable: Set default SOURCES => ${GO_BUILD_ARG_SOURCES}")
+  endif()
+
+  list(APPEND GO_BUILD_ARG_FLAGS ${GO_BUILD_ARG_FLAGS} -trimpath)
+  list(REMOVE_DUPLICATES GO_BUILD_ARG_FLAGS)
+  # What to do if a version is set
+  if (DEFINED GO_BUILD_ARG_VERSION)
+    list(APPEND GO_BUILD_ARG_LD_FLAGS -X main.Version=${GO_BUILD_ARG_VERSION})
+  endif()
+  # What to do if a revision is set
+  if (DEFINED GO_BUILD_ARG_REVISION)
+    list(APPEND GO_BUILD_ARG_LD_FLAGS -X main.Revision=${GO_BUILD_ARG_REVISION})
+  endif()
+  # Setup default GOOS
+  # Cross-compiling is probably not possible
+  if (NOT DEFINED GO_BUILD_ARG_GOOS)
+    string(TOLOWER ${CMAKE_SYSTEM_NAME} GO_BUILD_ARG_GOOS)
+    message(STATUS "add_golang_executable: Set default GOOS => ${GO_BUILD_ARG_GOOS}")
+  endif ()
+  # Setup default GOARCH
+  if (NOT GO_BUILD_ARG_GOARCH)
+    if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
+      set(GO_BUILD_ARG_GOARCH "386")
+    elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64")
+      set(GO_BUILD_ARG_GOARCH "arm64")
+    elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm")
+      set(GO_BUILD_ARG_GOARCH "arm")
+    else () # AMD64(windows) OR x86_64
+      set(GO_BUILD_ARG_GOARCH "amd64")
+    endif ()
+    message(STATUS "add_golang_executable: Set default GOARCH => ${GO_BUILD_ARG_GOARCH}")
+  endif ()
+  # Setup default CGO
+  if (NOT GO_BUILD_ARG_CGO)
+    set(GO_BUILD_ARG_CGO "0")
+    message(STATUS "add_golang_executable: Set default CGO = ${GO_BUILD_ARG_CGO}")
+  endif ()
+  #
+  message(VERBOSE "TARGET      = ${target}")
+  message(VERBOSE "ENTRY_POINT = ${GO_BUILD_ARG_ENTRY_POINT}")
+  message(VERBOSE "GOMOD_DIR   = ${GO_BUILD_ARG_GOMOD_DIR}")
+  message(VERBOSE "OUTPUT      = ${GO_BUILD_ARG_OUTPUT}")
+  message(VERBOSE "FLAGS       = ${GO_BUILD_ARG_FLAGS}")
+  message(VERBOSE "LD_FLAGS    = ${GO_BUILD_ARG_LD_FLAGS}")
+  message(VERBOSE "SOURCES     = ${GO_BUILD_ARG_SOURCES}")
+  message(VERBOSE "VERSION     = ${GO_BUILD_ARG_VERSION}")
+  message(VERBOSE "REVISION    = ${GO_BUILD_ARG_REVISION}")
+  message(VERBOSE "GOOS        = ${GO_BUILD_ARG_GOOS}")
+  message(VERBOSE "GOARCH      = ${GO_BUILD_ARG_GOARCH}")
+  message(VERBOSE "CGO         = ${GO_BUILD_ARG_CGO}")
+  # Build custom command
+  add_custom_command(
+    OUTPUT ${GO_BUILD_ARG_OUTPUT}
+    COMMAND CGO=${GO_BUILD_ARG_CGO} GOOS=${GO_BUILD_ARG_GOOS} GOARCH=${GO_BUILD_ARG_GOARCH}
+    go build
+    -o ${GO_BUILD_ARG_OUTPUT}
+    ${GO_BUILD_ARG_FLAGS}
+    -ldflags="${GO_BUILD_ARG_LD_FLAGS}"
+    ${GO_BUILD_ARG_ENTRY_POINT}
+    WORKING_DIRECTORY ${GO_BUILD_ARG_GOMOD_DIR}
+    DEPENDS ${GO_BUILD_ARG_SOURCES} ${GO_BUILD_ARG_DEPS}
+    COMMENT "Building ..."
   )
-  # depend checker
-  add_custom_target(${GOLANG_BUILD_TARGET} ALL
-    SOURCES ${GOLANG_BUILD_OUT_DIRECTRY}/${GOLANG_BUILD_TARGET}
-    DEPENDS ${GOLANG_BUILD_OUT_DIRECTRY}/${GOLANG_BUILD_TARGET}
-    COMMENT "Build command done...."
+  # Build custom target
+  add_custom_target(${target} ALL
+    DEPENDS ${GO_BUILD_ARG_OUTPUT}
+    COMMENT "Done build proccess ..."
   )
 endfunction(add_golang_executable)

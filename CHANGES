@@ -1,3 +1,8 @@
+v0.201.0
+- feat(builder): Change add_golang_execute
+- feat: Start of UI implementation
+- feat: Add environment variables for go build
+
 v0.200.1
 - fix(doc): Fix link in README
 

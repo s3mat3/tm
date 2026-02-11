@@ -1,5 +1,15 @@
 #[[
+ This code is licensed under the MIT License, see the LICENSE file for details
+ Copyright © 2026 s3mat3
+ Author s3mat3
+
+ Brief:
+   Simple build target for GO language.
+]]
+
+#[[
 Building an executable from GO source
+
 add_golang_executable(
   target       -- Target name. (required)
   ENTRY_POINT  -- Entry point for executable. (required)

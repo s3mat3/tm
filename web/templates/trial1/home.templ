@@ -1,0 +1,30 @@
+package trial1
+
+templ Home() {
+    @Index("trial1") {
+    <div class="container mx-auto px-4 py-8">
+	    <h1 class="text-3xl font-bold text-center mb-8">My first app with htmx, alpine.js and golang.</h1>
+		<div x-data="{ count: 0 }" class="bg-white p-6 rounded-lg shadow-md mb-6">
+			 <h2 class="text-xl font-semibold mb-4">Counter</h2>
+			 <p class="mb-4">Count value: <span x-text="count" class="font-bold text-blue-600"></span></p>
+			 <span @click="count++" class="cursor-pointer bg-blue-500 hover:bg-blue-800 text-white rounded icon icon-48">
+			 	   arrow_circle_up
+			 </span>
+			 <span @click="count--" class="cursor-pointer bg-red-500 hover:bg-red-800 text-white rounded icon icon-48">
+			 	   arrow_circle_down
+			 </span>
+		</div>
+		<div class="bg-white p-6 rounded-lg shadow-md">
+			 <h2 class="text-xl font-semibold mb-4">HTMX</h2>
+			 <span
+			 	hx-get="/api/clock-its"
+				hx-target="#time_result"
+				class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded icon icon-48"
+              >
+			  timer
+			  </span>
+			  <div id="time_result" class="mt-4 p-4 bg-gray-100 rounded"></div>
+		</div>
+	</div>
+    }
+}

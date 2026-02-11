@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@import "@savaryna/tailwindcss-material-symbols";
+
+/* @import '@savaryna/tailwindcss-material-symbols/css'; */
+@source "../templates/**/*.{go, templ}"

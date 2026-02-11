@@ -2,10 +2,10 @@ root = "."
 tmp_dir = ".air-tmp"
 
 [build]
-  cmd = "templ generate && go build -o ./.air-tmp/main ./app/cmd/study"
+  cmd = "templ generate && npm run build && go build -o ./.air-tmp/main ./cmd/trial1"
   bin = "./.air-tmp/main"
   delay = 1000
-  exclude_dir = [".air-tmp", "vendor", "app/ui/node_modules", "build", "docker", "cmake", "docs", "tools", "scripts"]
+  exclude_dir = [".air-tmp", "vendor", "node_modules", "app", "build", "docker", "cmake", "docs", "tools", "scripts"]
   include_ext = ["go", "templ", "html"]
   exclude_regex = ["_test.go", "_templ.go"]
 

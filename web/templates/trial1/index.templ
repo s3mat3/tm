@@ -1,0 +1,20 @@
+package trial1
+
+templ Index(title string) {
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <title>{ title }</title>
+			<link rel="icon" type="image/svg+xml" href="/dist/favicon.svg" />
+            <link rel="stylesheet" href="/dist/assets/app-base.css"/>
+            <link rel="stylesheet" href="/dist/fonts/material-symbols-outlined.css"/>
+            <script src="/dist/htmx-importer.js"></script>
+            <script defer src="/dist/alpine-importer.js"></script>
+        </head>
+        <body class="bg-gray-100 min-h-screen select-none">
+            { children... }
+        </body>
+    </html>
+}
